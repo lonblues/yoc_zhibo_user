@@ -3,7 +3,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/index.php': {
-        target: 'http://101.132.180.199/host/YaodianCreater/',
+        target: 'http://101.132.180.199/host/KenengCreater/',
         secure: false
       }
     }
