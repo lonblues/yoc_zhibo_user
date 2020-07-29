@@ -2,7 +2,7 @@
   <div class="l-c">
     <el-form ref="ruleForm2" :model="ruleForm2" :rules="rules2" label-position="right" label-width="90px"
              class="demo-ruleForm login-container" status-icon>
-      <h3 class="title">要点创作系统</h3>
+      <h3 class="title">可能学院创作系统</h3>
       <el-form-item prop="employee_email" label="账号:">
         <el-input v-model="ruleForm2.creater_email" type="text" auto-complete="off" placeholder="账号"/>
       </el-form-item>
