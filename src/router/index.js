@@ -1,65 +1,44 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Login from '../views/Login.vue'
-import AlbumDetail from '../views/AlbumDetail.vue'
-import SongDetail from '../views/SongDetail.vue'
-import CreaterInfo from '../views/CreaterInfo.vue'
-import AlbumList from '../views/AlbumList.vue'
-import ReviewList from '../views/ReviewList.vue'
+import Router from 'vue-router'
 import { getUserId } from '../utils/store'
-Vue.use(VueRouter)
-
-const routes = [
-  {
-    path: '/',
-    name: 'CreaterInfo',
-    component: CreaterInfo,
-    meta: {
-      requiresAuth: true
+const Project = () => import('@/pages/results/ProjectList')
+const Account = () => import('@/pages/results/AccountList')
+const Award = () => import('@/pages/results/AwardList')
+const Index = () => import('@/pages/index.vue')
+Vue.use(Router)
+const originalPush = Router.prototype.push
+Router.prototype.push = function push (location) {
+  return originalPush.call(this, location).catch(err => err)
+}
+const router = new Router({
+  routes: [
+    {
+      path: '/',
+      redirect: '/project'
+    },
+    {
+      path: '/index',
+      name: 'index',
+      component: Index,
+      children: [
+        {
+          path: '/project',
+          name: 'project',
+          component: Project
+        },
+        {
+          path: '/account/:id',
+          name: 'account',
+          component: Account
+        },
+        {
+          path: '/award/:id/:code',
+          name: 'award',
+          component: Award
+        }
+      ]
     }
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: Login
-  },
-  {
-    path: '/albumList',
-    name: 'AlbumList',
-    component: AlbumList,
-    meta: {
-      requiresAuth: true
-    }
-  },
-  {
-    path: '/reviews',
-    name: 'ReviewList',
-    component: ReviewList,
-    meta: {
-      requiresAuth: true
-    }
-  },
-  {
-    path: '/albumdetail/:id',
-    name: 'AlbumDetail',
-    component: AlbumDetail,
-    meta: {
-      requiresAuth: true
-    }
-  },
-  {
-    path: '/songdetail/:id',
-    name: 'SongDetail',
-    component: SongDetail,
-    meta: {
-      requiresAuth: true
-    }
-  }
-]
-
-const router = new VueRouter({
-  linkActiveClass: 'active',
-  routes
+  ]
 })
 router.beforeEach((to, from, next) => {
   if (to.path === '/login') {
