@@ -32,7 +32,12 @@ export default {
   data () {
     return {
       award: {
-        tHead: [],
+        tHead: [
+          { id: 'student_name', label: '名字' },
+          { id: 'student_gender', label: '性别' },
+          { id: 'student_mobile', label: '手机号码' },
+          { id: 'student_email', label: '邮箱' }
+        ],
         tBody: []
       }
     }
@@ -42,7 +47,18 @@ export default {
       this.$route.params.id,
       this.$route.params.code
     ).then(({ data }) => {
-      this.award.tBody = data.data
+      this.award.tBody = data.data.map(item => {
+        return {
+          ...item.student_info,
+          item
+        }
+      })
+      this.award.tBody = this.award.tBody.map(item => {
+        return {
+          ...item,
+          student_name: `${item.student_lastName}${item.student_givenName}`
+        }
+      })
     })
   },
   methods: {}
