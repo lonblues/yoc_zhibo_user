@@ -84,6 +84,7 @@ export default {
   methods: {
     getGameList () {
       getProjectsByYear(this.time).then(({ data }) => {
+        console.log(data)
         this.project.tBody = data
       })
     },

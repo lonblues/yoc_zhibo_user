@@ -1,10 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import { getUserId } from '../utils/store'
+// import { getUserId } from '../utils/store'
 const Project = () => import('@/pages/results/ProjectList')
 const Account = () => import('@/pages/results/AccountList')
 const Award = () => import('@/pages/results/AwardList')
 const Index = () => import('@/pages/index.vue')
+const toPDF = () => import('@/pages/results/toPDF.vue')
+
 Vue.use(Router)
 const originalPush = Router.prototype.push
 Router.prototype.push = function push (location) {
@@ -37,22 +39,28 @@ const router = new Router({
           component: Award
         }
       ]
+    },
+    {
+      path: '/topdf',
+      name: 'toPDF',
+      component: toPDF
+
     }
   ]
 })
-router.beforeEach((to, from, next) => {
-  if (to.path === '/login') {
-    next()
-  } else {
-    var userId = getUserId()
-    console.log('userId:' + userId)
-    if (to.meta.requiresAuth && !userId) {
-      next({
-        path: '/login'
-      })
-    } else {
-      next()
-    }
-  }
-})
+// router.beforeEach((to, from, next) => {
+//   if (to.path === '/login') {
+//     next()
+//   } else {
+//     var userId = getUserId()
+//     console.log('userId:' + userId)
+//     if (to.meta.requiresAuth && !userId) {
+//       next({
+//         path: '/login'
+//       })
+//     } else {
+//       next()
+//     }
+//   }
+// })
 export default router

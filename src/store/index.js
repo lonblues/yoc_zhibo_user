@@ -1,3 +1,16 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 Vue.use(Vuex)
+
+const store = new Vuex.Store({
+  state: {
+    awardInfo: {}
+  },
+  mutations: {
+    setAward (state, value) {
+      state.awardInfo = value
+    }
+  }
+})
+
+export default store

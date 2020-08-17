@@ -5,19 +5,34 @@
       :tableData="award.tBody"
       :isPaginationShow="false"
     >
-      <!-- <template slot="operation">
+      <template slot="operation">
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button
               type="text"
-              @click="getWinnerList(scope.row.id, this.$route.params.id)"
+              @click="exportInit(scope.$index)"
             >
-              查看学校获奖名单
+              导出pdf
             </el-button>
           </template>
         </el-table-column>
-      </template> -->
+      </template>
+
     </table-list>
+    <el-dialog
+      title="选择导出模式"
+      :visible.sync="dialogVisible"
+      width="30%"
+      >
+      <el-select v-model="type" placeholder="请选择导出模式">
+        <el-option label="单页" value="page"></el-option>
+        <el-option label="表格" value="table"></el-option>
+      </el-select>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="toPDF">预览</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -31,6 +46,10 @@ export default {
   },
   data () {
     return {
+      dialogVisible: false,
+      type: '',
+      chooseIndex: 0,
+      awardList: [],
       award: {
         tHead: [
           { id: 'student_name', label: '名字' },
@@ -50,6 +69,7 @@ export default {
   },
   async created () {
     await this.getAwardsByAccountProject()
+
     await this.addGroup()
   },
   methods: {
@@ -58,6 +78,8 @@ export default {
         this.$route.params.id,
         this.$route.params.code
       ).then(({ data }) => {
+        console.log(data.data)
+        this.awardList = data.data
         this.award.tBody = data.data.map(item => {
           return {
             ...item.student_info,
@@ -100,6 +122,22 @@ export default {
           group: this.groups[item.application_team_code].join(' ')
         }
       })
+    },
+    exportInit (index) {
+      this.chooseIndex = index
+      this.dialogVisible = true
+    },
+    toPDF () {
+      this.$store.commit('setAward', this.awardList[this.chooseIndex])
+      if (this.type === 'page' && this.awardList[this.chooseIndex].award_type !== 'team') {
+        this.$router.push({
+          path: '/topdf'
+        })
+      } else if (this.type === 'page' && this.awardList[this.chooseIndex].award_type === 'team') {
+        // this.$router.push({
+        //   path:'/teampdf'
+        // })
+      }
     }
   }
 }
