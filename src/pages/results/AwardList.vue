@@ -1,17 +1,10 @@
 <template>
   <div>
-    <table-list
-      :tableHead="award.tHead"
-      :tableData="award.tBody"
-      :isPaginationShow="false"
-    >
+    <table-list :tableHead="award.tHead" :tableData="award.tBody" :isPaginationShow="false">
       <template slot="operation">
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button
-              type="text"
-              @click="exportInit(scope.$index)"
-            >
+            <el-button type="text" @click="exportInit(scope.$index)">
               导出pdf
             </el-button>
           </template>
@@ -19,18 +12,14 @@
       </template>
 
     </table-list>
-    <el-dialog
-      title="选择导出模式"
-      :visible.sync="dialogVisible"
-      width="30%"
-      >
+    <el-dialog title="选择导出模式" :visible.sync="dialogVisible" width="30%">
       <el-select v-model="type" placeholder="请选择导出模式">
         <el-option label="单页" value="page"></el-option>
         <el-option label="表格" value="table"></el-option>
       </el-select>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="toPDF">预览</el-button>
+        <el-button type="primary" @click="toPDF" :disabled="type===''">预览</el-button>
       </span>
     </el-dialog>
   </div>
@@ -62,9 +51,7 @@ export default {
         ],
         tBody: []
       },
-      groups: {
-
-      }
+      groups: {}
     }
   },
   async created () {
@@ -98,25 +85,23 @@ export default {
       })
     },
     unique () {
-      const isGroups = this.award.tBody.map((item) => {
+      const isGroups = this.award.tBody.map(item => {
         return item.application_team_code
       })
-      console.log(isGroups)
       return Array.from(new Set(isGroups))
     },
     addGroup () {
       const arr = this.unique()
-      console.log(arr)
       arr.forEach((item, index) => {
         this.$set(this.groups, item, [])
       })
-      this.award.tBody.forEach((item) => {
+      this.award.tBody.forEach(item => {
         this.groups[item.application_team_code].push(item.student_name)
       })
       arr.forEach((item, index) => {
         this.groups[item] = Array.from(new Set(this.groups[item]))
       })
-      this.award.tBody = this.award.tBody.map((item) => {
+      this.award.tBody = this.award.tBody.map(item => {
         return {
           ...item,
           group: this.groups[item.application_team_code].join(' ')
@@ -127,16 +112,44 @@ export default {
       this.chooseIndex = index
       this.dialogVisible = true
     },
+    // 获取团队列表
+    getTeamList () {
+      const teamList = []
+      let arr = []
+      const different = []
+      this.award.tBody.forEach(item => {
+        if (!teamList.includes(item.group) || !different.includes(item.test_award)) {
+          teamList.push(item.group)
+          different.push(item.test_award)
+          arr.push(item)
+        }
+      })
+      console.log(teamList)
+      arr = arr.map((item) => {
+        return {
+          award: item.test_award,
+          team: item.account.account_name,
+          groups: item.group,
+          work: item.test_subject
+        }
+      })
+      return arr
+    },
     toPDF () {
-      this.$store.commit('setAward', this.awardList[this.chooseIndex])
-      if (this.type === 'page' && this.awardList[this.chooseIndex].award_type !== 'team') {
+      if (
+        this.type === 'page' &&
+        this.awardList[this.chooseIndex].award_type !== 'team'
+      ) {
+        this.$store.commit('setAward', this.awardList[this.chooseIndex])
         this.$router.push({
           path: '/topdf'
         })
-      } else if (this.type === 'page' && this.awardList[this.chooseIndex].award_type === 'team') {
-        // this.$router.push({
-        //   path:'/teampdf'
-        // })
+      } else {
+        const data = this.getTeamList()
+        this.$store.commit('getTeamList', data)
+        this.$router.push({
+          name: 'teamPDF'
+        })
       }
     }
   }

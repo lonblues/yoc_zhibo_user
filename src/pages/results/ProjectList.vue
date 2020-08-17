@@ -26,7 +26,7 @@
       <template slot="operation">
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="getSchool(scope.row.project_code)">
+            <el-button type="text" @click="getSchool(scope.row.project_code, scope.row.project_name)">
               查看参加学校
             </el-button>
           </template>
@@ -92,7 +92,8 @@ export default {
       console.log(value)
       this.getGameList()
     },
-    getSchool (code) {
+    getSchool (code, title) {
+      this.$store.commit('getTitle', title)
       this.$router.push({ name: 'account', params: { id: code } })
     }
   }

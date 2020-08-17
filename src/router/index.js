@@ -6,6 +6,7 @@ const Account = () => import('@/pages/results/AccountList')
 const Award = () => import('@/pages/results/AwardList')
 const Index = () => import('@/pages/index.vue')
 const toPDF = () => import('@/pages/results/toPDF.vue')
+const teamPDF = () => import('@/pages/results/teamPDF.vue')
 
 Vue.use(Router)
 const originalPush = Router.prototype.push
@@ -44,7 +45,11 @@ const router = new Router({
       path: '/topdf',
       name: 'toPDF',
       component: toPDF
-
+    },
+    {
+      path: '/teampdf',
+      name: 'teamPDF',
+      component: teamPDF
     }
   ]
 })
