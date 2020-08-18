@@ -96,7 +96,13 @@ export default {
         this.$set(this.groups, item, [])
       })
       this.award.tBody.forEach(item => {
-        this.groups[item.application_team_code].push(item.student_name)
+        if (item.application_team_role === '领队') {
+          this.groups[item.application_team_code].unshift(
+            `${item.student_name}(领队)`
+          )
+        } else {
+          this.groups[item.application_team_code].push(item.student_name)
+        }
       })
       arr.forEach((item, index) => {
         this.groups[item] = Array.from(new Set(this.groups[item]))
@@ -116,20 +122,30 @@ export default {
     getTeamList () {
       const teamList = []
       let arr = []
-      const different = []
+      const different = ['Outstanding Team Leader']
       this.award.tBody.forEach(item => {
-        if (!teamList.includes(item.group) || !different.includes(item.test_award)) {
+        if (
+          !teamList.includes(item.group) ||
+          !different.includes(item.test_award)
+        ) {
           teamList.push(item.group)
           different.push(item.test_award)
           arr.push(item)
         }
       })
       console.log(teamList)
-      arr = arr.map((item) => {
+      arr = arr.map(item => {
+        let group = item.group.split(' ')
+        if (group[0] === '') {
+          group.splice(0, 1)
+        }
+        group.splice(1, 0, '<br/>')
+        group = group.join(' ')
+        console.log(group)
         return {
           award: item.test_award,
           team: item.account.account_name,
-          groups: item.group,
+          groups: group,
           work: item.test_subject
         }
       })

@@ -7,6 +7,7 @@
       <div class="title">
         {{ title }}
       </div>
+      <div class="title-size">获奖名单</div>
       <div class="table-pdf" v-for="(item, index) in teamList" :key="index">
         <table class="table" cellspacing="0" width="700" border="1">
           <tr>
@@ -19,7 +20,7 @@
           </tr>
           <tr>
             <td>成员</td>
-            <td>{{ item.groups }}</td>
+            <td v-html="item.groups"></td>
           </tr>
           <tr>
             <td>获奖作品</td>
@@ -74,8 +75,14 @@ export default {
   width: 100%;
   text-align: center;
   font-family: "Microsoft YaHei";
-  font-size: 260%;
-  margin-top: 60px;
+  font-size: 160%;
+  margin-bottom: 20px;
+  margin-top: 100px;
+}
+.title-size {
+  font-size: 140%;
+  text-align: center;
+  margin-bottom: 20px;
 }
 .table-pdf {
   margin-bottom: 20px;
@@ -84,6 +91,10 @@ export default {
   }
   td {
     text-align: center;
+  }
+  tr {
+    height: 60px;
+    line-height: 24px;
   }
 }
 .table {
