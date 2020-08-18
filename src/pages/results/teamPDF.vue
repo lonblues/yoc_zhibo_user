@@ -45,6 +45,7 @@ export default {
   created () {
     this.teamList = this.$store.state.teamList
     this.title = this.$store.state.title
+    console.log(this.teamList)
   },
   methods: {
     toPDF () {

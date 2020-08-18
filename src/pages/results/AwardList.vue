@@ -144,11 +144,22 @@ export default {
         this.$router.push({
           path: '/topdf'
         })
-      } else {
+      } else if (
+        this.type === 'table' &&
+        this.awardList[this.chooseIndex].award_type === 'team'
+      ) {
         const data = this.getTeamList()
         this.$store.commit('getTeamList', data)
         this.$router.push({
           name: 'teamPDF'
+        })
+      } else if (
+        this.type === 'table' &&
+        this.awardList[this.chooseIndex].award_type !== 'team'
+      ) {
+        this.$store.commit('setAward', this.awardList)
+        this.$router.push({
+          path: '/individualTable'
         })
       }
     }

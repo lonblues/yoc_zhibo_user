@@ -7,6 +7,7 @@ const Award = () => import('@/pages/results/AwardList')
 const Index = () => import('@/pages/index.vue')
 const toPDF = () => import('@/pages/results/toPDF.vue')
 const teamPDF = () => import('@/pages/results/teamPDF.vue')
+const individualTable = () => import('@/pages/results/individualTable.vue')
 
 Vue.use(Router)
 const originalPush = Router.prototype.push
@@ -50,6 +51,11 @@ const router = new Router({
       path: '/teampdf',
       name: 'teamPDF',
       component: teamPDF
+    },
+    {
+      path: '/individualTable',
+      name: 'individualTable',
+      component: individualTable
     }
   ]
 })

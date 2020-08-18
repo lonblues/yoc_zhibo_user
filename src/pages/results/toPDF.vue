@@ -1,12 +1,12 @@
 <template>
     <div >
-        <div ><el-button @click="toPDF">导出PDF</el-button></div>
-    <div id="capture" style="width:1200px;height:1700px;overflow:hidden">
+      <div><el-button @click="toPDF">导出PDF</el-button></div>
+      <div id="capture" style="width:1200px;height:1700px;overflow:hidden">
         <div class="pic">
             <img :src="require('../../assets/fbla.png')" style="width:240px;height:240px;margin-left:60px">
         </div>
         <div class="title">
-            {{awardInfo.test_subject}}
+            {{awardInfo.project.project_name}}喜报
         </div>
         <div class="advertising">
             Advertising
@@ -17,7 +17,7 @@
         <div class="school" style="margin-top:100px">{{awardInfo.account.account_name}}</div>
         <div class="school" style="margin-top:40px">{{awardInfo.account.account_nameEN}}</div>
 
-    </div>
+      </div>
     </div>
 </template>
 
@@ -27,11 +27,12 @@ import JsPDF from 'jspdf'
 export default {
   data () {
     return {
-      awardInfo: ''
+      awardInfo: {}
     }
   },
-  mounted () {
+  created () {
     this.awardInfo = this.$store.state.awardInfo
+    console.log(this.awardInfo)
   },
   methods: {
     toPDF () {
