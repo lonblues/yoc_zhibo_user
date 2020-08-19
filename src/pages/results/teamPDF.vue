@@ -3,7 +3,7 @@
     <div>
       <el-button @click="toPDF">导出PDF</el-button>
     </div>
-    <div id="capture" style="width:1200px;height:1700px;overflow:hidden">
+    <div id="capture" style="width:1200px;height:1700px;overflow:scroll">
       <div class="title">
         {{ title }}
       </div>
@@ -28,7 +28,14 @@
           </tr>
         </table>
       </div>
-      <div class="picTable"><img :src="require('../../assets/jea.jpeg')" style="width:350px;height:150px"></div>
+      <div class="contact1">
+            <img :src="require('../../assets/jea.jpeg')" style="width:350px;height:150px">
+            <div>
+              <p>{{awardInfo[0].project.project_mail_from_company}}</p>
+              <p>{{awardInfo[0].project.project_BU}}中国办公室</p>
+              <p>{{time}}</p>
+            </div>
+      </div>
     </div>
   </div>
 </template>
@@ -41,13 +48,17 @@ export default {
     return {
       awardInfo: '',
       teamList: [],
-      title: ''
+      title: '',
+      time: ''
     }
   },
   created () {
     this.teamList = this.$store.state.teamList
+    this.awardInfo = this.$store.state.awardInfo
     this.title = this.$store.state.title
     console.log(this.teamList)
+    const date = new Date()
+    this.time = date.getFullYear() + '.' + (date.getMonth() < 10 ? '0' + date.getMonth() : date.getMonth())
   },
   methods: {
     toPDF () {
@@ -87,6 +98,7 @@ export default {
 }
 .table-pdf {
   margin-bottom: 20px;
+
   tr > td:first-child {
     width: 150px;
   }
@@ -101,8 +113,10 @@ export default {
 .table {
   margin: 0 auto;
 }
-.picTable {
-  margin-top: 60px;
-  margin-left: 230px;
+.contact1{
+  width: 700px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
 }
 </style>

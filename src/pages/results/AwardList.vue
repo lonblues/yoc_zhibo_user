@@ -19,9 +19,33 @@
       </el-select>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="toPDF" :disabled="type===''">预览</el-button>
+        <el-button type="primary" @click="toPDF" :disabled="type===''">确定</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog title="选择奖项" :visible.sync="dialogVisible1">
+      <el-select v-model="chooseAwards" multiple placeholder="请选择导出奖项">
+        <el-option v-for="(item,index) in chooseAwardsList" :key="index" :value="item" :label="item"></el-option>
+      </el-select>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible1 = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible2=true" :disabled="chooseAwards===[]">确定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog title="排序" multiple :visible.sync="dialogVisible2" >
+      <div v-for="(item,index) in chooseAwards" :key="index" style="display:flex;align-items:center;margin-top:20px">
+        <div>{{item}}</div>
+        <el-button size="mini" style="margin-left:20px" type="primary" @click="moveUp(index)">上移</el-button>
+        <el-button size="mini" type="primary" @click="moveDown(index)">下移</el-button>
+      </div>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible2 = false">取 消</el-button>
+        <el-button type="primary" @click="preview">预览</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -36,6 +60,8 @@ export default {
   data () {
     return {
       dialogVisible: false,
+      dialogVisible1: false,
+      dialogVisible2: false,
       type: '',
       chooseIndex: 0,
       awardList: [],
@@ -51,7 +77,9 @@ export default {
         ],
         tBody: []
       },
-      groups: {}
+      groups: {},
+      chooseAwards: [],
+      chooseAwardsList: []
     }
   },
   async created () {
@@ -67,6 +95,17 @@ export default {
       ).then(({ data }) => {
         console.log(data.data)
         this.awardList = data.data
+        const awardList = data.data
+        var hash = []
+        for (var i = 0; i < awardList.length; i++) {
+          if (hash.indexOf(awardList[i].test_award) === -1) {
+            if (awardList[i].test_award !== '') {
+              hash.push(awardList[i].test_award)
+            }
+          }
+        }
+        this.chooseAwardsList = hash
+
         this.award.tBody = data.data.map(item => {
           return {
             ...item.student_info,
@@ -166,6 +205,9 @@ export default {
       ) {
         const data = this.getTeamList()
         this.$store.commit('getTeamList', data)
+
+        this.$store.commit('setAward', this.awardList)
+
         this.$router.push({
           name: 'teamPDF'
         })
@@ -173,10 +215,46 @@ export default {
         this.type === 'table' &&
         this.awardList[this.chooseIndex].award_type !== 'team'
       ) {
-        this.$store.commit('setAward', this.awardList)
-        this.$router.push({
-          path: '/individualTable'
-        })
+        this.dialogVisible1 = true
+      }
+    },
+    sortData (a, b) {
+      return a.showIndex - b.showIndex
+    },
+
+    preview () {
+      const awardList = this.awardList
+      const chooseAwards = this.chooseAwards
+      const showList = []
+      for (let i = 0; i < awardList.length; i++) {
+        for (let j = 0; j < chooseAwards.length; j++) {
+          if (awardList[i].test_award === chooseAwards[j]) {
+            awardList[i].showIndex = j
+            showList.push(awardList[i])
+          }
+        }
+      }
+      console.log(showList)
+      showList.sort(this.sortData)
+
+      this.$store.commit('setAward', showList)
+
+      this.$router.push({
+        path: '/individualTable'
+      })
+    },
+    moveDown (index) {
+      if (index !== this.chooseAwards.length - 1) {
+        const awardList = this.chooseAwards
+        awardList[index] = awardList.splice(index + 1, 1, awardList[index])[0]
+        this.chooseAwards = awardList
+      }
+    },
+    moveUp (index) {
+      if (index !== 0) {
+        const awardList = this.chooseAwards
+        awardList[index] = awardList.splice(index - 1, 1, awardList[index])[0]
+        this.chooseAwards = awardList
       }
     }
   }
