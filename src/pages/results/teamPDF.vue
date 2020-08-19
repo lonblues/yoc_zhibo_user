@@ -28,6 +28,7 @@
           </tr>
         </table>
       </div>
+      <div class="picTable"><img :src="require('../../assets/jea.jpeg')" style="width:350px;height:150px"></div>
     </div>
   </div>
 </template>
@@ -99,5 +100,9 @@ export default {
 }
 .table {
   margin: 0 auto;
+}
+.picTable {
+  margin-top: 60px;
+  margin-left: 230px;
 }
 </style>
