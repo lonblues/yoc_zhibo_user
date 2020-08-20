@@ -36,8 +36,8 @@
     <el-dialog title="排序" multiple :visible.sync="dialogVisible2" >
       <div v-for="(item,index) in chooseAwards" :key="index" style="display:flex;align-items:center;margin-top:20px">
         <div>{{item}}</div>
-        <el-button size="mini" style="margin-left:20px" type="primary" @click="moveUp(index)">上移</el-button>
-        <el-button size="mini" type="primary" @click="moveDown(index)">下移</el-button>
+        <el-button size="mini" style="margin-left:20px" type="text" @click="moveUp(index)">上移</el-button>
+        <el-button size="mini" type="text" @click="moveDown(index)">下移</el-button>
       </div>
 
       <span slot="footer" class="dialog-footer">
@@ -216,6 +216,10 @@ export default {
         this.awardList[this.chooseIndex].award_type !== 'team'
       ) {
         this.dialogVisible1 = true
+      } else {
+        this.$message({
+          message: '团队单页模板尚未导入'
+        })
       }
     },
     sortData (a, b) {

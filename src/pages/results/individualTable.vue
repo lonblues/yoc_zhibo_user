@@ -1,6 +1,6 @@
 <template>
   <div>
-      <div><el-button @click="toPDF">导出PDF</el-button></div>
+      <div><el-button @click="toPDF" type="primary">导出PDF</el-button></div>
       <div id="capture" style="width:1200px;height:1700px;overflow:scroll;">
           <div class="picTable"><img :src="require('../../assets/fbla.png')" style="width:100px;height:100px"></div>
           <div class="title" style="margin-top:40px">{{title}}</div>
@@ -16,7 +16,6 @@
                   <td>姓名 / Name</td>
                   <td>全国排名 / Rank</td>
                   <td>奖项 / Award</td>
-
               </tr>
               <tr v-for="(item,index) in awardInfo" :key="index" >
                 <td>
@@ -92,9 +91,6 @@ export default {
         var pageData = canvas.toDataURL('image/jpeg', 1.0)
 
         var pdf = new JsPDF('', 'pt', 'a4')
-
-        // 有两个高度需要区分，一个是html页面的实际高度，和生成pdf的页面高度(841.89)
-        // 当内容未超过pdf一页显示的范围，无需分页
 
         pdf.addImage(pageData, 'JPEG', 0, 0, imgWidth, imgHeight)
 

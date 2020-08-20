@@ -1,6 +1,6 @@
 <template>
     <div >
-      <div><el-button @click="toPDF">导出PDF</el-button></div>
+      <div><el-button @click="toPDF" type="primary">导出PDF</el-button></div>
       <div id="capture" style="width:1200px;height:1700px;overflow:hidden">
         <div class="pic">
             <img :src="require('../../assets/fbla.png')" style="width:240px;height:240px;margin-left:60px">

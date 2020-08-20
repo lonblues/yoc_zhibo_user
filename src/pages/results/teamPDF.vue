@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <el-button @click="toPDF">导出PDF</el-button>
+      <el-button @click="toPDF" type="primary">导出PDF</el-button>
     </div>
     <div id="capture" style="width:1200px;height:1700px;overflow:scroll">
       <div class="title">
