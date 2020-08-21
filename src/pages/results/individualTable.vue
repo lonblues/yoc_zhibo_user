@@ -1,20 +1,21 @@
 <template>
   <div>
-      <div><el-button @click="toPDF" type="primary">导出PDF</el-button></div>
-      <div id="capture" style="width:1200px;height:1700px;overflow:scroll;">
+      <!-- <div><el-button @click="toPDF" type="primary">导出PDF</el-button></div> -->
+      <div><el-button @click="toPicture" type="primary">导出图片</el-button></div>
+      <div id="capture" style="width:1000px;overflow:scroll;">
           <div class="picTable"><img :src="require('../../assets/fbla.png')" style="width:100px;height:100px"></div>
           <div class="title" style="margin-top:40px">{{title}}</div>
           <div class="title" style="margin-top:40px">获奖名单</div>
           <div class="title" style="margin-top:10px">Winners list</div>
-          <div class="txt" style="margin-top:40px">学校团队奖 / School Team Award</div>
+
           <div class="txt" style="margin-top:40px">个人奖 / Individual Award</div>
           <div class="intro">（*按照所有分项全国排名依次排序）</div>
-          <table class="table" cellspacing="0"  border="1" width="1000">
+          <table class="table" cellspacing="0"  border="1" width="800">
               <tr>
                   <td>学校 / School</td>
                   <td>分项 / Event</td>
                   <td>姓名 / Name</td>
-                  <td>全国排名 / Rank</td>
+                  <!-- <td>全国排名 / Rank</td> -->
                   <td>奖项 / Award</td>
               </tr>
               <tr v-for="(item,index) in awardInfo" :key="index" >
@@ -27,7 +28,7 @@
                     <div>{{item.student_info.student_lastName + item.student_info.student_givenName}}</div>
                     <div>{{item.student_info.student_givenName_pinyin + ' ' + item.student_info.student_lastName_pinyin}}</div>
                 </td>
-                <td></td>
+                <!-- <td></td> -->
                 <td>{{item.test_award}}</td>
 
               </tr>
@@ -85,6 +86,9 @@ export default {
     toPDF () {
       html2canvas(document.querySelector('#capture')).then(canvas => {
         // A4纸的长宽
+        // var contentWidth = canvas.width
+        // var contentHeight = canvas.height
+
         var imgWidth = 595.28
         var imgHeight = 841.89
 
@@ -95,6 +99,15 @@ export default {
         pdf.addImage(pageData, 'JPEG', 0, 0, imgWidth, imgHeight)
 
         pdf.save('content.pdf')
+      })
+    },
+    toPicture () {
+      html2canvas(document.querySelector('#capture')).then(canvas => {
+        const href = canvas.toDataURL('image/png', 1)
+        const a = document.createElement('a') // 创建a标签
+        a.download = 'picture' // 设置图片名字
+        a.href = href
+        a.dispatchEvent(new MouseEvent('click'))
       })
     }
 
@@ -122,12 +135,12 @@ export default {
     text-align: center ;
 }
 .table{
-    margin: 20px auto;
+    margin: 50px auto;
     text-align:center;
     font-size: 18px;
 }
 .contact{
-  width: 1000px;
+  width: 800px;
   margin: 0 auto;
   display: flex;
   justify-content: flex-end;

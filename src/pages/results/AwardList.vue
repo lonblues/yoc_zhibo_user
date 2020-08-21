@@ -1,7 +1,8 @@
 <template>
   <div>
+    <el-button @click="exportInit" type="primary">导出喜报</el-button>
     <table-list :tableHead="award.tHead" :tableData="award.tBody" :isPaginationShow="false">
-      <template slot="operation">
+      <!-- <template slot="operation">
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="text" @click="exportInit(scope.$index)">
@@ -9,17 +10,22 @@
             </el-button>
           </template>
         </el-table-column>
-      </template>
-
+      </template> -->
     </table-list>
-    <el-dialog title="选择导出模式" :visible.sync="dialogVisible" width="30%">
-      <el-select v-model="type" placeholder="请选择导出模式">
+    <el-dialog title="选择导出" :visible.sync="dialogVisible" width="30%">
+      <div>选择导出类型</div>
+      <el-select v-model="status" placeholder="请选择导出类型" style="margin-top:10px">
+        <el-option label="个人" value="individual"></el-option>
+        <el-option label="团队" value="team"></el-option>
+      </el-select>
+      <div style="margin-top:10px">选择导出模式</div>
+      <el-select v-model="type" placeholder="请选择导出模式" style="margin-top:10px">
         <el-option label="单页" value="page"></el-option>
         <el-option label="表格" value="table"></el-option>
       </el-select>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="toPDF" :disabled="type===''">确定</el-button>
+        <el-button type="primary" @click="toPDF" :disabled="type==='' || status===''">确定</el-button>
       </span>
     </el-dialog>
 
@@ -62,6 +68,7 @@ export default {
       dialogVisible: false,
       dialogVisible1: false,
       dialogVisible2: false,
+      dialogVisible3: false,
       type: '',
       chooseIndex: 0,
       awardList: [],
@@ -79,7 +86,8 @@ export default {
       },
       groups: {},
       chooseAwards: [],
-      chooseAwardsList: []
+      chooseAwardsList: [],
+      status: ''
     }
   },
   async created () {
@@ -153,12 +161,15 @@ export default {
         }
       })
     },
-    exportInit (index) {
-      this.chooseIndex = index
+    exportInit () {
       this.dialogVisible = true
     },
     // 获取团队列表
     getTeamList () {
+      // console.log(this.award.tBody)
+      // for(let i=0;i<this.award.tBody.length;i++){
+
+      // }
       const teamList = []
       let arr = []
       const different = ['Outstanding Team Leader']
@@ -193,27 +204,53 @@ export default {
     toPDF () {
       if (
         this.type === 'page' &&
-        this.awardList[this.chooseIndex].award_type !== 'team'
+        this.status === 'individual'
       ) {
-        this.$store.commit('setAward', this.awardList[this.chooseIndex])
-        this.$router.push({
-          path: '/topdf'
-        })
+        const awardList = []
+        for (let i = 0; i < this.awardList.length; i++) {
+          if (this.awardList[i].award_type !== 'team') {
+            awardList.push(this.awardList[i])
+          }
+        }
+        console.log(awardList)
+        if (awardList.length === 0) {
+          this.$message({
+            message: '当前页没有个人奖项'
+          })
+        } else {
+          this.$store.commit('setAward', awardList)
+          this.$router.push({
+            path: '/topdf'
+          })
+        }
       } else if (
         this.type === 'table' &&
-        this.awardList[this.chooseIndex].award_type === 'team'
+        this.status === 'team'
       ) {
-        const data = this.getTeamList()
-        this.$store.commit('getTeamList', data)
+        const awardList = []
+        for (let i = 0; i < this.awardList.length; i++) {
+          if (this.awardList[i].award_type === 'team') {
+            awardList.push(this.awardList[i])
+          }
+        }
+        console.log(awardList)
+        if (awardList.length === 0) {
+          this.$message({
+            message: '当前页没有团队奖项'
+          })
+        } else {
+          const data = this.getTeamList()
+          this.$store.commit('getTeamList', data)
 
-        this.$store.commit('setAward', this.awardList)
+          this.$store.commit('setAward', this.awardList)
 
-        this.$router.push({
-          name: 'teamPDF'
-        })
+          this.$router.push({
+            name: 'teamPDF'
+          })
+        }
       } else if (
         this.type === 'table' &&
-        this.awardList[this.chooseIndex].award_type !== 'team'
+        this.status !== 'team'
       ) {
         this.dialogVisible1 = true
       } else {
@@ -227,7 +264,13 @@ export default {
     },
 
     preview () {
-      const awardList = this.awardList
+      const awardList = []
+      for (let i = 0; i < this.awardList.length; i++) {
+        if (this.awardList[i].award_type !== 'team') {
+          awardList.push(this.awardList[i])
+        }
+      }
+
       const chooseAwards = this.chooseAwards
       const showList = []
       for (let i = 0; i < awardList.length; i++) {
