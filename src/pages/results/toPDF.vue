@@ -2,23 +2,23 @@
     <div >
         <div><el-button @click="toPDF" type="primary">导出PDF</el-button></div>
         <div id="capture" style="width:1200px;">
-          <!-- <div v-for="(item,index) in awardInfo" :key="index" >
+          <div v-for="(item,index) in awardInfo" :key="index" >
             <div class="pic">
                 <img :src="require('../../assets/fbla.png')" style="width:240px;height:240px;margin-left:60px">
             </div>
             <div class="title">
-                {{item.project.project_name}}喜报
+                {{item.projectName}}喜报
             </div>
             <div class="advertising">
                 Advertising
             </div>
             <div class="testAward">{{item.test_award}}</div>
-            <div class="name" style="margin-top:100px" v-if="item.student_info">{{item.student_info.student_lastName+awardInfo.student_info.student_givenName}}</div>
-            <div class="name" style="margin-top:40px" v-if="item.student_info">{{item.student_info.student_givenName_pinyin+' '+awardInfo.student_info.student_lastName_pinyin}}</div>
-            <div class="school" style="margin-top:100px" v-if="item.account">{{item.account.account_name}}</div>
-            <div class="school" style="margin-top:40px" v-if="item.account">{{item.account.account_nameEN}}</div>
+            <div class="name" style="margin-top:100px">{{item.name}}</div>
+            <div class="name" style="margin-top:40px">{{item.nameEN}}</div>
+            <div class="school" style="margin-top:100px">{{item.account_name}}</div>
+            <div class="school" style="margin-top:40px">{{item.account_nameEN}}</div>
 
-          </div> -->
+          </div>
 
         </div>
 
@@ -31,25 +31,25 @@ import JsPDF from 'jspdf'
 export default {
   data () {
     return {
-      awardInfo: [
-        {
-          test_subject: '',
-          test_score: '',
-          test_award: '',
-          china_final_status: '',
-          award_type: '',
-          student_info: {},
-          app_info: {},
-          account: {},
-          project: {}
-        }
-      ]
+      awardInfo: []
     }
   },
   created () {
-    this.awardInfo = this.$store.state.awardInfo
-    console.log(111)
-    console.log(this.awardInfo)
+    awardInfo = this.$store.state.awardInfo
+    
+    awardInfo.map(item=>{
+      item.projectName =item.project.project_name
+      item.name = item.student_info.student_lastName+awardInfo.student_info.student_givenName
+      item.nameEN = item.student_info.student_givenName_pinyin+' '+awardInfo.student_info.student_lastName_pinyin
+      item.account_name = item.account.account_name
+      item.account_nameEN = item.account.account_nameEN
+    })
+    // for(let i=0;i<this.$store.state.awardInfo.length;i++){
+    //   this.awardInfo[i].projectName = this.$store.state.awardInfo[i].project.project_name
+
+    // }
+    
+    console.log(awardInfo)
   },
   methods: {
     toPDF () {
