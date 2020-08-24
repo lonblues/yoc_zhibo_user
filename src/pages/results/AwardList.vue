@@ -39,7 +39,7 @@
       </span>
     </el-dialog>
 
-    <el-dialog title="排序" multiple :visible.sync="dialogVisible2" >
+    <el-dialog title="排序"  :visible.sync="dialogVisible2" >
       <div v-for="(item,index) in chooseAwards" :key="index" style="display:flex;align-items:center;margin-top:20px">
         <div>{{item}}</div>
         <el-button size="mini" style="margin-left:20px" type="text" @click="moveUp(index)">上移</el-button>

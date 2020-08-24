@@ -22,3 +22,9 @@ export function getAwardsByAccountProject (account_id, project_code) {
     project_code
   })
 }
+export function uploadBackground(project_id){
+  return request.post('./index.php',{
+    function:'uploadBackground',
+    project_id
+  })
+}
