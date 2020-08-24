@@ -29,6 +29,13 @@
             <el-button type="text" @click="getSchool(scope.row.project_code, scope.row.project_name)">
               查看参加学校
             </el-button>
+            <el-button type="text" >
+              上传背景图
+            </el-button>
+
+            <!-- <el-button type="text" @click="uploadBg(scope.row.project_code, scope.row.project_name)">
+              上传背景图
+            </el-button> -->
           </template>
         </el-table-column>
       </template>
@@ -68,7 +75,8 @@ export default {
           // { id: "period", label: "" },
           // { id: "bank_account_id", label: "" }
         ],
-        tBody: []
+        tBody: [],
+        chooseIndex: 0
       },
       optionsTime: [
         { value: '18-19', label: '2018年-2019年' },
@@ -96,6 +104,10 @@ export default {
       this.$store.commit('getTitle', title)
       this.$router.push({ name: 'account', params: { id: code } })
     }
+    // upload(index){
+    //   this.chooseIndex = index
+    //   this.
+    // }
   }
 }
 </script>

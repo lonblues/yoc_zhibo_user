@@ -2,13 +2,13 @@
   <div>
       <!-- <div><el-button @click="toPDF" type="primary">导出PDF</el-button></div> -->
       <div><el-button @click="toPicture" type="primary">导出图片</el-button></div>
-      <div id="capture" style="width:1000px;overflow:scroll;">
-          <div class="picTable"><img :src="require('../../assets/fbla.png')" style="width:100px;height:100px"></div>
-          <div class="title" style="margin-top:40px">{{title}}</div>
-          <div class="title" style="margin-top:40px">获奖名单</div>
-          <div class="title" style="margin-top:10px">Winners list</div>
+      <div id="capture" style="width:1000px;overflow:hidden;min-height:1200px;" :style="capture">
 
-          <div class="txt" style="margin-top:40px">个人奖 / Individual Award</div>
+          <div class="title1" style="margin-top:280px">{{title}}</div>
+          <div class="title1" style="margin-top:20px">获奖名单</div>
+          <div class="title1" style="margin-top:10px">Winners list</div>
+
+          <div class="txt" style="margin-top:20px">个人奖 / Individual Award</div>
           <div class="intro">（*按照所有分项全国排名依次排序）</div>
           <table class="table" cellspacing="0"  border="1" width="800">
               <tr>
@@ -52,11 +52,17 @@ export default {
     return {
       awardInfo: [],
       title: '',
-      flag: true
+      flag: true,
+      capture: {
+        backgroundImage: '',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '100% 100%'
+      }
     }
   },
   created () {
     this.awardInfo = this.$store.state.awardInfo
+    this.capture.backgroundImage = `url(${this.awardInfo[0].project.project_award_background})`
     console.log(this.awardInfo)
     this.title = this.$store.state.title
     const date = new Date()
@@ -102,8 +108,12 @@ export default {
       })
     },
     toPicture () {
-      html2canvas(document.querySelector('#capture')).then(canvas => {
-        const href = canvas.toDataURL('image/png', 1)
+      html2canvas(document.querySelector('#capture'), {
+        dpi: window.devicePixelRatio * 2,
+        scale: 2,
+        useCORS: true
+      }).then(canvas => {
+        const href = canvas.toDataURL('image/png', 1.0)
         const a = document.createElement('a') // 创建a标签
         a.download = 'picture' // 设置图片名字
         a.href = href
@@ -122,7 +132,7 @@ export default {
     margin-top: 20px;
     justify-content: center;
 }
-.title{
+.title1{
     font-size: 180%;
     text-align: center;
     font-weight: bold;
@@ -135,7 +145,7 @@ export default {
     text-align: center ;
 }
 .table{
-    margin: 50px auto;
+    margin: 30px auto;
     text-align:center;
     font-size: 18px;
 }
@@ -144,6 +154,7 @@ export default {
   margin: 0 auto;
   display: flex;
   justify-content: flex-end;
+  margin-bottom: 60px;
 }
 
 </style>

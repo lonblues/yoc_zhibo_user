@@ -166,14 +166,18 @@ export default {
     },
     // 获取团队列表
     getTeamList () {
-      // console.log(this.award.tBody)
-      // for(let i=0;i<this.award.tBody.length;i++){
-
-      // }
+      console.log(this.award.tBody)
+      const awardList = []
+      for (let i = 0; i < this.award.tBody.length; i++) {
+        if (this.award.tBody[i].award_type === 'team') {
+          awardList.push(this.award.tBody[i])
+        }
+      }
       const teamList = []
       let arr = []
       const different = ['Outstanding Team Leader']
-      this.award.tBody.forEach(item => {
+
+      awardList.forEach(item => {
         if (
           !teamList.includes(item.group) ||
           !different.includes(item.test_award)
@@ -206,23 +210,24 @@ export default {
         this.type === 'page' &&
         this.status === 'individual'
       ) {
-        const awardList = []
-        for (let i = 0; i < this.awardList.length; i++) {
-          if (this.awardList[i].award_type !== 'team') {
-            awardList.push(this.awardList[i])
-          }
-        }
-        console.log(awardList)
-        if (awardList.length === 0) {
-          this.$message({
-            message: '当前页没有个人奖项'
-          })
-        } else {
-          this.$store.commit('setAward', awardList)
-          this.$router.push({
-            path: '/topdf'
-          })
-        }
+        // const awardList = []
+        // for (let i = 0; i < this.awardList.length; i++) {
+        //   if (this.awardList[i].award_type !== 'team') {
+        //     awardList.push(this.awardList[i])
+        //   }
+        // }
+        // console.log(awardList)
+        // if (awardList.length === 0) {
+        //   this.$message({
+        //     message: '当前页没有个人奖项'
+        //   })
+        // } else {
+        //   this.$store.commit('setAward', awardList)
+        //   this.$router.push({
+        //     path: '/topdf'
+        //   })
+        // }
+        this.dialogVisible1 = true
       } else if (
         this.type === 'table' &&
         this.status === 'team'
@@ -286,9 +291,15 @@ export default {
 
       this.$store.commit('setAward', showList)
 
-      this.$router.push({
-        path: '/individualTable'
-      })
+      if (this.type === 'table') {
+        this.$router.push({
+          path: '/individualTable'
+        })
+      } else {
+        this.$router.push({
+          path: '/topdf'
+        })
+      }
     },
     moveDown (index) {
       if (index !== this.chooseAwards.length - 1) {
