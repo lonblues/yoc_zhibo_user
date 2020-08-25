@@ -44,6 +44,7 @@
     <el-dialog title="上传背景图" :visible.sync="dialogVisible" >
       <img v-if="project.tBody[chooseIndex].project_award_background" :src="project.tBody[chooseIndex].project_award_background" style="width:100px;height:150px">
       <div v-if="!project.tBody[chooseIndex].project_award_background">未上传</div>
+      <input v-if="!project.tBody[chooseIndex].project_award_background" style="margin-top:20px" name="file" type="file"  accept="*" :ref="'file'+chooseIndex"/>
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
@@ -56,7 +57,7 @@
 
 <script>
 import tableList from '@/components/Table'
-import { getProjectsByYear,uploadBackground } from '@/api/yaodian.js'
+import { getProjectsByYear, uploadBackground } from '@/api/yaodian.js'
 export default {
   name: 'project',
   components: {
@@ -64,13 +65,13 @@ export default {
   },
   data () {
     return {
-      dialogVisible:false,
+      dialogVisible: false,
       project: {
         tHead: [
           { id: 'bank_account_company', label: '公司' },
           { id: 'project_name', label: '名称' },
           { id: 'project_type', label: '类型' },
-          { id: 'project_award_background' , label:'背景图'}
+          { id: 'project_award_background', label: '背景图' }
           // { id: "project_code", label: "" },
           // { id: "project_year", label: "" },
           // { id: "project_platform", label: "" },
@@ -89,7 +90,7 @@ export default {
           // { id: "bank_account_id", label: "" }
         ],
         tBody: []
-        
+
       },
       optionsTime: [
         { value: '18-19', label: '2018年-2019年' },
@@ -97,7 +98,7 @@ export default {
       ],
       time: '19-20',
       form: {},
-      chooseIndex:0
+      chooseIndex: 0
     }
   },
   created () {
@@ -118,13 +119,28 @@ export default {
       this.$store.commit('getTitle', title)
       this.$router.push({ name: 'account', params: { id: code } })
     },
-    upload(index){
+    upload (index) {
       this.chooseIndex = index
-      this.dialogVisible=true
+      this.dialogVisible = true
     },
-    uploadBackground(){
-      uploadBackground({project_id:this.project.tBody[this.chooseIndex]._id.$id}).then(res=>{
+    uploadBackground () {
+      const myfile = this.$refs['file' + this.chooseIndex]
+      const file = myfile.files[0]
+      const param = new FormData()
+      param.append('file', file)
+      param.append('function', 'uploadBackground')
+      param.append('project_id', this.project.tBody[this.chooseIndex]._id.$id)
+
+      uploadBackground(param).then(res => {
         console.log(res)
+        if (res.data.status === 'success') {
+          this.$message({
+            message: '上传成功',
+            type: 'success'
+          })
+          this.dialogVisible = false
+          this.getGameList()
+        }
       })
     }
   }

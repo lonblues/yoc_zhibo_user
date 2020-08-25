@@ -57,7 +57,7 @@
 
 <script>
 import tableList from '@/components/Table'
-import { getAwardsByAccountProject } from '@/api/yaodian.js'
+import { getAwardsByAccountProject, uploadChoose } from '@/api/yaodian.js'
 export default {
   name: 'award',
   components: {
@@ -69,7 +69,6 @@ export default {
       dialogVisible1: false,
       dialogVisible2: false,
       dialogVisible3: false,
-      type: '',
       chooseIndex: 0,
       awardList: [],
       award: {
@@ -85,14 +84,15 @@ export default {
         tBody: []
       },
       groups: {},
+
       chooseAwards: [],
       chooseAwardsList: [],
-      status: ''
+      status: '',
+      type: ''
     }
   },
   async created () {
     await this.getAwardsByAccountProject()
-
     await this.addGroup()
   },
   methods: {
@@ -104,6 +104,14 @@ export default {
         console.log(data.data)
         this.awardList = data.data
         const awardList = data.data
+        if ('choose_template' in awardList[0].project) {
+          this.type = awardList[0].project.choose_template.type
+          this.status = awardList[0].project.choose_template.status
+          if ('chooseAwards' in awardList[0].project.choose_template) {
+            this.chooseAwards = awardList[0].project.choose_template.chooseAwards
+          }
+        }
+
         var hash = []
         for (var i = 0; i < awardList.length; i++) {
           if (hash.indexOf(awardList[i].test_award) === -1) {
@@ -232,6 +240,17 @@ export default {
         this.type === 'table' &&
         this.status === 'team'
       ) {
+        if (!this.awardList[0].project.choose_template) {
+          uploadChoose({
+            project_id: this.awardList[0].project._id.$id,
+            type: this.type,
+            status: this.status,
+            chooseAwards: this.chooseAwards
+          }).then(res => {
+            console.log(res)
+          })
+        }
+
         const awardList = []
         for (let i = 0; i < this.awardList.length; i++) {
           if (this.awardList[i].award_type === 'team') {
@@ -269,6 +288,17 @@ export default {
     },
 
     preview () {
+      if (!this.awardList[0].project.choose_template) {
+        uploadChoose({
+          project_id: this.awardList[0].project._id.$id,
+          type: this.type,
+          status: this.status,
+          chooseAwards: this.chooseAwards
+        }).then(res => {
+          console.log(res)
+        })
+      }
+
       const awardList = []
       for (let i = 0; i < this.awardList.length; i++) {
         if (this.awardList[i].award_type !== 'team') {

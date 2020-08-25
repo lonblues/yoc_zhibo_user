@@ -22,9 +22,30 @@ export function getAwardsByAccountProject (account_id, project_code) {
     project_code
   })
 }
-export function uploadBackground(project_id){
-  return request.post('./index.php',{
-    function:'uploadBackground',
-    project_id
+// export function uploadBackground(project_id){
+//   return request.post('./index.php',{
+//     function:'uploadBackground',
+//     project_id
+//   })
+// }
+export function uploadBackground (formData) {
+  return request.post('./index.php', formData).then(function (response) {
+    return response
+  }).catch(function (error) {
+    console.log(error)
+  })
+}
+
+export function uploadChoose ({ project_id, type, status, chooseAwards }) {
+  return request.post('./index.php', {
+    function: 'uploadChoose',
+    project_id,
+    type,
+    status,
+    chooseAwards
+  }).then(function (response) {
+    return response
+  }).catch(function (error) {
+    console.log(error)
   })
 }

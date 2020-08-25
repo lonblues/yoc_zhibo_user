@@ -18,9 +18,7 @@
             <div class="school" style="margin-top:80px">{{item.account_name}}</div>
             <div class="school" style="margin-top:40px">{{item.account_nameEN}}</div>
           </div>
-
         </div>
-
     </div>
 </template>
 
@@ -42,7 +40,7 @@ export default {
   created () {
     const awardInfo = this.$store.state.awardInfo
     // this.capture.backgroundImage = `url(${awardInfo[0].project.project_award_background})`
-    this.url = `${awardInfo[0].project.project_award_background}`
+    this.url = awardInfo[0].project.project_award_background
 
     console.log(awardInfo)
     awardInfo.map(item => {
@@ -63,7 +61,7 @@ export default {
       html2canvas(document.querySelector('#capture'), {
         useCORS: true
       }).then(canvas => {
-        var contentWidth = canvas.width
+        // var contentWidth = canvas.width
         var contentHeight = canvas.height
 
         var pageHeight = 841.89
@@ -110,7 +108,7 @@ export default {
     text-align: center;
     font-family: 'Microsoft YaHei';
     font-size: 240%;
-    margin-top: 420px;
+    margin-top: 440px;
 }
 .advertising{
     width: 100%;
