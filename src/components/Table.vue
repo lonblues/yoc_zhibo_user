@@ -20,6 +20,7 @@
           <div>{{ scope.row[column.id] }}</div>
         </template>
       </el-table-column>
+      <slot name="background"></slot>
       <slot name="operation"></slot>
     </el-table>
     <div class="pagination-wrapper">

@@ -47,7 +47,7 @@
       </div>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible2 = false">取 消</el-button>
+        <el-button @click="dialogVisible2 = false">取消</el-button>
         <el-button type="primary" @click="preview">预览</el-button>
       </span>
     </el-dialog>
@@ -57,7 +57,7 @@
 
 <script>
 import tableList from '@/components/Table'
-import { getAwardsByAccountProject, uploadChoose } from '@/api/yaodian.js'
+import { getAwardsByAccountProject } from '@/api/yaodian.js'
 export default {
   name: 'award',
   components: {
@@ -240,16 +240,7 @@ export default {
         this.type === 'table' &&
         this.status === 'team'
       ) {
-        if (!this.awardList[0].project.choose_template) {
-          uploadChoose({
-            project_id: this.awardList[0].project._id.$id,
-            type: this.type,
-            status: this.status,
-            chooseAwards: this.chooseAwards
-          }).then(res => {
-            console.log(res)
-          })
-        }
+       
 
         const awardList = []
         for (let i = 0; i < this.awardList.length; i++) {
@@ -288,16 +279,6 @@ export default {
     },
 
     preview () {
-      if (!this.awardList[0].project.choose_template) {
-        uploadChoose({
-          project_id: this.awardList[0].project._id.$id,
-          type: this.type,
-          status: this.status,
-          chooseAwards: this.chooseAwards
-        }).then(res => {
-          console.log(res)
-        })
-      }
 
       const awardList = []
       for (let i = 0; i < this.awardList.length; i++) {

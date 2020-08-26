@@ -10,7 +10,7 @@
                 {{item.projectName}}喜报
             </div>
             <div class="advertising">
-                Advertising
+                {{item.test_subject}}
             </div>
             <div class="testAward" >{{item.test_award}}</div>
             <div class="name" style="margin-top:80px">{{item.name}}</div>
