@@ -103,6 +103,9 @@ export default {
       ).then(({ data }) => {
         console.log(data.data)
         this.awardList = data.data
+        if (!data.data.length) {
+          return
+        }
         const awardList = data.data
         if ('choose_template' in awardList[0].project) {
           this.type = awardList[0].project.choose_template.type
@@ -240,8 +243,6 @@ export default {
         this.type === 'table' &&
         this.status === 'team'
       ) {
-       
-
         const awardList = []
         for (let i = 0; i < this.awardList.length; i++) {
           if (this.awardList[i].award_type === 'team') {
@@ -279,7 +280,6 @@ export default {
     },
 
     preview () {
-
       const awardList = []
       for (let i = 0; i < this.awardList.length; i++) {
         if (this.awardList[i].award_type !== 'team') {
@@ -299,9 +299,7 @@ export default {
       }
       console.log(showList)
       showList.sort(this.sortData)
-
       this.$store.commit('setAward', showList)
-
       if (this.type === 'table') {
         this.$router.push({
           path: '/individualTable'
