@@ -27,7 +27,7 @@
             <el-button type="text" @click="upload(scope.row, scope.$index)">
               上传背景图
             </el-button>
-            <el-button type="text" @click="setChoose(scope.$index)">
+            <el-button type="text" @click="setChoose(scope.row, scope.$index)">
               选项设置
             </el-button>
           </template>
@@ -42,14 +42,14 @@
         <el-button type="primary" @click="uploadBackground">确定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="选项设置" :visible.sync="dialogVisible1">
+    <el-dialog title="导出设置" :visible.sync="dialogVisible1">
       <div>
-        个人：
-        <el-radio v-model="radio" label="1">单页</el-radio>
-        <el-radio v-model="radio" label="2">表格</el-radio>
+        模式：
+        <el-radio v-model="radio" label="1">个人</el-radio>
+        <el-radio v-model="radio" label="2">团队</el-radio>
       </div>
       <div style="margin-top:20px">
-        团队：
+        类型：
         <el-radio v-model="radio1" label="1">单页</el-radio>
         <el-radio v-model="radio1" label="2">表格</el-radio>
       </div>
@@ -85,8 +85,8 @@
 import tableList from '@/components/Table'
 import {
   getProjectsByYear,
-  uploadBackground
-  // uploadChoose
+  uploadBackground,
+  uploadChoose
 } from '@/api/yaodian.js'
 export default {
   name: 'project',
@@ -180,7 +180,9 @@ export default {
         }
       })
     },
-    setChoose (index) {
+    setChoose (val, index) {
+      this.chooseAwards = []
+      this.itemDetail = val
       this.chooseIndex = index
       this.awards = this.project.tBody[index].awards
       this.dialogVisible1 = true
@@ -200,7 +202,27 @@ export default {
         this.chooseAwards = awardList
       }
     },
-    uploadChoose () {}
+    uploadChoose () {
+      const { itemDetail, radio, radio1, radio2, chooseAwards } = this
+      const options = {
+        project_id: itemDetail._id.$id,
+        individualType: radio,
+        teamType: radio1,
+        awardForward: radio2,
+        chooseAwards: chooseAwards
+      }
+      uploadChoose(options)
+        .then(({ data }) => {
+          console.log(data)
+          if (data.status === 'success') {
+            this.$message.success('修改设置成功')
+            this.dialogVisible1 = false
+          }
+        })
+        .catch(() => {
+          this.$message.error('修改设置失败,请稍后再试')
+        })
+    }
   }
 }
 </script>

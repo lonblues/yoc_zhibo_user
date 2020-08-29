@@ -26,6 +26,7 @@
 import html2canvas from 'html2canvas'
 import JsPDF from 'jspdf'
 export default {
+  name: 'toPDF',
   data () {
     return {
       awardInfo: [],
@@ -40,7 +41,7 @@ export default {
   created () {
     const awardInfo = this.$store.state.awardInfo
     // this.capture.backgroundImage = `url(${awardInfo[0].project.project_award_background})`
-    this.url = awardInfo[0].project.project_award_background
+    this.url = awardInfo.length && awardInfo[0].project.project_award_background
 
     console.log(awardInfo)
     awardInfo.map(item => {

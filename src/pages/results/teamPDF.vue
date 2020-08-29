@@ -29,7 +29,7 @@
         </table>
       </div>
       <div class="contact1">
-            <div>
+            <div class="footer">
               <p>{{awardInfo[0].project.project_mail_from_company}}</p>
               <p>{{awardInfo[0].project.project_BU}}中国办公室</p>
               <p>{{time}}</p>
@@ -135,6 +135,7 @@ export default {
 }
 .contact1{
   width: 700px;
+  height: 120px;
   margin: 0 auto;
   display: flex;
   justify-content: flex-end;
