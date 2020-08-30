@@ -8,6 +8,8 @@ const Index = () => import('@/pages/index.vue')
 const toPDF = () => import('@/pages/results/toPDF.vue')
 const teamPDF = () => import('@/pages/results/teamPDF.vue')
 const individualTable = () => import('@/pages/results/individualTable.vue')
+const mix = () => import('@/pages/results/mix.vue')
+const mixX = () => import('@/pages/results/mixX.vue')
 
 Vue.use(Router)
 const originalPush = Router.prototype.push
@@ -56,6 +58,16 @@ const router = new Router({
       path: '/individualTable',
       name: 'individualTable',
       component: individualTable
+    },
+    {
+      path:'/mix',
+      name:'mix',
+      component:mix
+    },
+    {
+      path:'/mixX',
+      name:'mixX',
+      component:mixX
     }
   ]
 })

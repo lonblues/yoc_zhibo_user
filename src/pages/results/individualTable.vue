@@ -30,7 +30,7 @@
             <div>{{item.student_info.student_lastName + item.student_info.student_givenName}}</div>
             <div>{{item.student_info.student_givenName_pinyin + ' ' + item.student_info.student_lastName_pinyin}}</div>
           </td>
-          <!-- <td></td> -->
+          
           <td>{{item.test_award}}</td>
 
         </tr>
@@ -89,44 +89,6 @@ export default {
     }
   },
   methods: {
-    // moveUp(index){
-    //   if(index!==0){
-    //     let awardList =this.awardInfo
-    //     awardList[index]=awardList.splice(index-1,1,this.awardInfo[index])[0]
-    //     this.awardInfo=awardList
-    //   }
-    // },
-    // moveDown(index){
-    //   if(index!==this.awardInfo.length-1){
-    //     let awardList =this.awardInfo
-    //     awardList[index]=awardList.splice(index+1,1,this.awardInfo[index])[0]
-    //     this.awardInfo=awardList
-    //   }
-    // },
-    // remove(index){
-    //   let awardList = this.awardInfo
-    //   awardList.splice(index,1)
-    //   this.awardInfo=awardList
-    // },
-
-    toPDF () {
-      html2canvas(document.querySelector('#capture')).then(canvas => {
-        // A4纸的长宽
-        // var contentWidth = canvas.width
-        // var contentHeight = canvas.height
-
-        var imgWidth = 595.28
-        var imgHeight = 841.89
-
-        var pageData = canvas.toDataURL('image/jpeg', 1.0)
-
-        var pdf = new JsPDF('', 'pt', 'a4')
-
-        pdf.addImage(pageData, 'JPEG', 0, 0, imgWidth, imgHeight)
-
-        pdf.save('content.pdf')
-      })
-    },
     toPicture () {
       html2canvas(document.querySelector('#capture'), {
         dpi: window.devicePixelRatio * 2,

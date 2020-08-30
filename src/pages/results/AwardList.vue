@@ -1,16 +1,16 @@
 <template>
   <div>
-    <el-button @click="exportInit" type="primary" class="mb20 mt20">导出喜报</el-button>
+    <el-button @click="toPDF" type="primary" class="mb20 mt20">导出喜报</el-button>
     <table-list :tableHead="award.tHead" :tableData="award.tBody" :isPaginationShow="false">
     </table-list>
-    <el-dialog title="导出" :visible.sync="dialogVisible" width="30%">
+    <!-- <el-dialog title="导出" :visible.sync="dialogVisible" width="30%">
       <div>
-        模式：
-        <el-radio v-model="radio" label="1">个人</el-radio>
-        <el-radio v-model="radio" label="2">团队</el-radio>
+        个人布局：
+        <el-radio v-model="radio" label="1">单页</el-radio>
+        <el-radio v-model="radio" label="2">表格</el-radio>
       </div>
       <div style="margin-top:20px">
-        类型：
+        团队布局：
         <el-radio v-model="radio1" label="1">单页</el-radio>
         <el-radio v-model="radio1" label="2">表格</el-radio>
       </div>
@@ -34,31 +34,11 @@
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" @click="toPDF">确定</el-button>
       </span>
-    </el-dialog>
-
-    <!-- <el-dialog title="选择奖项" :visible.sync="dialogVisible1">
-
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible1 = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible2=true" :disabled="chooseAwards===[]">确定</el-button>
-      </span>
-    </el-dialog>
-
-    <el-dialog title="排序" :visible.sync="dialogVisible2">
-      <div v-for="(item,index) in chooseAwards" :key="index" style="display:flex;align-items:center;margin-top:20px">
-        <div>{{item}}</div>
-        <el-button size="mini" style="margin-left:20px" type="text" @click="moveUp(index)">上移</el-button>
-        <el-button size="mini" type="text" @click="moveDown(index)">下移</el-button>
-      </div>
-
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible2 = false">取消</el-button>
-        <el-button type="primary" @click="preview">预览</el-button>
-      </span>
     </el-dialog> -->
+
 
   </div>
 </template>
@@ -119,17 +99,17 @@ export default {
           return
         }
         const awardList = data.data
-        if ('choose_template' in awardList[0].project) {
-          this.radio =
-            awardList[0].project.choose_template.individualType || '1'
-          this.radio1 = awardList[0].project.choose_template.teamType || '1'
-          this.radio2 = awardList[0].project.choose_template.awardForward || '1'
-          if ('chooseAwards' in awardList[0].project.choose_template) {
-            this.chooseAwards =
-              awardList[0].project.choose_template.chooseAwards
-            this.chooseAward = this.chooseAwards
-          }
-        }
+        console.log(awardList)
+        // if ('choose_template' in awardList[0].project) {
+        //   this.radio = awardList[0].project.choose_template.individualType || '1'
+        //   this.radio1 = awardList[0].project.choose_template.teamType || '1'
+        //   this.radio2 = awardList[0].project.choose_template.awardForward || '1'
+        //   if ('chooseAwards' in awardList[0].project.choose_template) {
+        //     this.chooseAwards =
+        //       awardList[0].project.choose_template.chooseAwards
+        //     this.chooseAward = this.chooseAwards
+        //   }
+        // }
 
         var hash = []
         for (var i = 0; i < awardList.length; i++) {
@@ -156,7 +136,9 @@ export default {
             group: item.application_team_code
           }
         })
+        
       })
+      
     },
     unique () {
       const isGroups = this.award.tBody.map(item => {
@@ -213,10 +195,19 @@ export default {
     },
     // 获取团队列表
     getTeamList () {
+      const awardListBefore = []
       const awardList = []
       for (let i = 0; i < this.award.tBody.length; i++) {
         if (this.award.tBody[i].award_type === 'team') {
-          awardList.push(this.award.tBody[i])
+          awardListBefore.push(this.award.tBody[i])
+        }
+      }
+      console.log(111,awardListBefore)
+      for(let i = 0 ; i< this.award.tBody[0].project.choose_template.chooseAwards.length;i++){
+        for (let j=0;j<awardListBefore.length;j++){
+          if(this.award.tBody[0].project.choose_template.chooseAwards[i]===awardListBefore[j].test_award){
+            awardList.push(awardListBefore[j])
+          }
         }
       }
       const teamList = []
@@ -256,86 +247,132 @@ export default {
       return arr
     },
     toPDF () {
-      if (this.radio === '1' && this.radio1 === '1') {
-        const awardList = []
-        for (let i = 0; i < this.awardList.length; i++) {
-          if (this.awardList[i].award_type !== 'team') {
-            awardList.push(this.awardList[i])
-          }
-        }
-        const chooseAwards = this.chooseAwards
-        const showList = []
-        for (let i = 0; i < awardList.length; i++) {
-          for (let j = 0; j < chooseAwards.length; j++) {
-            if (awardList[i].test_award === chooseAwards[j]) {
-              awardList[i].showIndex = j
-              showList.push(awardList[i])
+      // if (this.radio === '1' && this.radio1 === '1') {
+      //   const awardList = []
+      //   for (let i = 0; i < this.awardList.length; i++) {
+      //     if (this.awardList[i].award_type !== 'team') {
+      //       awardList.push(this.awardList[i])
+      //     }
+      //   }
+      //   const chooseAwards = this.chooseAwards
+      //   const showList = []
+      //   for (let i = 0; i < awardList.length; i++) {
+      //     for (let j = 0; j < chooseAwards.length; j++) {
+      //       if (awardList[i].test_award === chooseAwards[j]) {
+      //         awardList[i].showIndex = j
+      //         showList.push(awardList[i])
+      //       }
+      //     }
+      //   }
+      //   console.log(showList)
+      //   showList.sort(this.sortData)
+      //   console.log(showList)
+      //   if (this.chooseAward.length) {
+      //     this.$store.commit('setAward', showList)
+      //   } else {
+      //     this.$store.commit('setAward', this.awardList)
+      //   }
+      //   this.$router.push({
+      //     name: 'toPDF'
+      //   })
+      // } else if (this.radio === '2' && this.radio1 === '2') {
+      //   const awardList = []
+      //   for (let i = 0; i < this.awardList.length; i++) {
+      //     if (this.awardList[i].award_type === 'team') {
+      //       awardList.push(this.awardList[i])
+      //     }
+      //   }
+      //   if (awardList.length === 0) {
+      //     this.$message({
+      //       message: '当前页没有团队奖项'
+      //     })
+      //   } else {
+      //     const data = this.getTeamList()
+      //     this.$store.commit('getTeamList', data)
+      //     this.$store.commit('setAward', this.awardList)
+      //     this.$router.push({
+      //       name: 'teamPDF'
+      //     })
+      //   }
+      // } else if (this.radio === '1' && this.radio1 === '2') {
+      //   const awardList = []
+      //   for (let i = 0; i < this.awardList.length; i++) {
+      //     if (this.awardList[i].award_type !== 'team') {
+      //       awardList.push(this.awardList[i])
+      //     }
+      //   }
+      //   const chooseAwards = this.chooseAwards
+      //   const showList = []
+      //   for (let i = 0; i < awardList.length; i++) {
+      //     for (let j = 0; j < chooseAwards.length; j++) {
+      //       if (awardList[i].test_award === chooseAwards[j]) {
+      //         awardList[i].showIndex = j
+      //         showList.push(awardList[i])
+      //       }
+      //     }
+      //   }
+      //   console.log(showList)
+      //   showList.sort(this.sortData)
+      //   console.log(showList)
+      //   if (this.chooseAward.length) {
+      //     this.$store.commit('setAward', showList)
+      //   } else {
+      //     this.$store.commit('setAward', this.awardList)
+      //   }
+      //   this.$router.push({
+      //     name: 'individualTable'
+      //   })
+      // } else {
+      //   this.$message({
+      //     message: '团队单页模板尚未导入'
+      //   })
+      // }
+      if(this.awardList[0] && this.awardList[0].project.choose_template){
+        
+        
+          let awardList = this.awardList
+
+          let chooseAwards = awardList[0].project.choose_template.chooseAwards
+          const showList = []
+          
+          console.log(chooseAwards)
+          console.log(awardList)
+
+          for (let i = 0; i < chooseAwards.length; i++) {
+            for (let j = 0; j < awardList.length; j++) {
+              if (awardList[j].test_award === chooseAwards[i]) {
+                showList.push(awardList[j])
+              }
             }
           }
-        }
-        console.log(showList)
-        showList.sort(this.sortData)
-        console.log(showList)
-        if (this.chooseAward.length) {
+          console.log(showList)
+ 
           this.$store.commit('setAward', showList)
-        } else {
-          this.$store.commit('setAward', this.awardList)
-        }
-        this.$router.push({
-          name: 'toPDF'
-        })
-      } else if (this.radio === '2' && this.radio1 === '2') {
-        const awardList = []
-        for (let i = 0; i < this.awardList.length; i++) {
-          if (this.awardList[i].award_type === 'team') {
-            awardList.push(this.awardList[i])
-          }
-        }
-        if (awardList.length === 0) {
-          this.$message({
-            message: '当前页没有团队奖项'
-          })
-        } else {
-          const data = this.getTeamList()
+
+
+
+          //team部分单独设置
+         
+          let data = this.getTeamList()
           this.$store.commit('getTeamList', data)
-          this.$store.commit('setAward', this.awardList)
-          this.$router.push({
-            name: 'teamPDF'
-          })
-        }
-      } else if (this.radio === '1' && this.radio1 === '2') {
-        const awardList = []
-        for (let i = 0; i < this.awardList.length; i++) {
-          if (this.awardList[i].award_type !== 'team') {
-            awardList.push(this.awardList[i])
+
+          if(this.awardList[0].project.choose_template.awardForward === '1'){
+            this.$router.push({
+              path:'/mix'
+            })
+          }else if(this.awardList[0].project.choose_template.awardForward === '2'){
+            this.$router.push({
+              path:'/mixX'
+            })
           }
-        }
-        const chooseAwards = this.chooseAwards
-        const showList = []
-        for (let i = 0; i < awardList.length; i++) {
-          for (let j = 0; j < chooseAwards.length; j++) {
-            if (awardList[i].test_award === chooseAwards[j]) {
-              awardList[i].showIndex = j
-              showList.push(awardList[i])
-            }
-          }
-        }
-        console.log(showList)
-        showList.sort(this.sortData)
-        console.log(showList)
-        if (this.chooseAward.length) {
-          this.$store.commit('setAward', showList)
-        } else {
-          this.$store.commit('setAward', this.awardList)
-        }
-        this.$router.push({
-          name: 'individualTable'
-        })
-      } else {
+        
+      }else{
         this.$message({
-          message: '团队单页模板尚未导入'
+          message:'请先在首页设置导出模板'
         })
       }
+
+      
     },
     sortData (a, b) {
       return a.showIndex - b.showIndex

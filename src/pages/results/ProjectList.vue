@@ -10,11 +10,27 @@
     </el-form>
     <table-list :tableHead="project.tHead" :tableData="project.tBody" :isPaginationShow="false">
       <template slot="background">
-        <el-table-column label="背景图">
+        <el-table-column label="首图">
           <template slot-scope="scope">
             <div v-if="project.tBody[scope.$index].project_award_background !== undefined">
               <img :src="project.tBody[scope.$index].project_award_background" style="width:96px;height:120px">
             </div>
+          </template>
+        </el-table-column>
+      </template>
+      <template slot="backgroundFoot">
+        <el-table-column label="尾图">
+          <template slot-scope="scope">
+            <div v-if="project.tBody[scope.$index].project_award_background_foot !== undefined">
+              <img :src="project.tBody[scope.$index].project_award_background_foot" style="width:96px;height:120px">
+            </div>
+          </template>
+        </el-table-column>
+      </template>
+      <template slot="isSetChoose">
+        <el-table-column label="是否设置选项">
+          <template slot-scope="scope">
+            <div>{{project.tBody[scope.$index].choose_template==undefined?'未设置':'已设置'}}</div>
           </template>
         </el-table-column>
       </template>
@@ -25,7 +41,10 @@
               查看参加学校
             </el-button>
             <el-button type="text" @click="upload(scope.row, scope.$index)">
-              上传背景图
+              上传首图
+            </el-button>
+            <el-button type="text" @click="uploadFoot(scope.row, scope.$index)">
+              上传尾图
             </el-button>
             <el-button type="text" @click="setChoose(scope.row, scope.$index)">
               选项设置
@@ -34,7 +53,7 @@
         </el-table-column>
       </template>
     </table-list>
-    <el-dialog title="上传背景图" :visible.sync="dialogVisible">
+    <el-dialog title="上传首图" :visible.sync="dialogVisible">
       <div v-if="!itemDetail.project_award_background">未上传</div>
       <input style="margin-top:20px" name="file" type="file" accept="*" :ref="'file'+chooseIndex" />
       <span slot="footer" class="dialog-footer">
@@ -42,14 +61,23 @@
         <el-button type="primary" @click="uploadBackground">确定</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="上传尾图" :visible.sync="dialogVisible2">
+      <div v-if="!itemDetail.project_award_background_foot">未上传</div>
+      <input style="margin-top:20px" name="file" type="file" accept="*" :ref="'filef'+chooseIndex" />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible2 = false">取 消</el-button>
+        <el-button type="primary" @click="uploadBackgroundFoot">确定</el-button>
+      </span>
+    </el-dialog>
+
     <el-dialog title="导出设置" :visible.sync="dialogVisible1">
       <div>
-        模式：
-        <el-radio v-model="radio" label="1">个人</el-radio>
-        <el-radio v-model="radio" label="2">团队</el-radio>
+        个人布局：
+        <el-radio v-model="radio" label="1">单页</el-radio>
+        <el-radio v-model="radio" label="2">表格</el-radio>
       </div>
       <div style="margin-top:20px">
-        类型：
+        团队布局：
         <el-radio v-model="radio1" label="1">单页</el-radio>
         <el-radio v-model="radio1" label="2">表格</el-radio>
       </div>
@@ -86,7 +114,8 @@ import tableList from '@/components/Table'
 import {
   getProjectsByYear,
   uploadBackground,
-  uploadChoose
+  uploadChoose,
+  uploadBackgroundFoot
 } from '@/api/yaodian.js'
 export default {
   name: 'project',
@@ -97,6 +126,7 @@ export default {
     return {
       dialogVisible: false,
       dialogVisible1: false,
+      dialogVisible2: false,
       radio: '1',
       radio1: '1',
       radio2: '1',
@@ -160,6 +190,11 @@ export default {
       this.chooseIndex = index
       this.dialogVisible = true
     },
+    uploadFoot (val, index) {
+      this.itemDetail = val
+      this.chooseIndex = index
+      this.dialogVisible1 = true
+    },
     uploadBackground () {
       const myfile = this.$refs['file' + this.chooseIndex]
       const file = myfile.files[0]
@@ -180,11 +215,40 @@ export default {
         }
       })
     },
+    uploadBackgroundFoot(){
+      const myfile = this.$refs['filef' + this.chooseIndex]
+      const file = myfile.files[0]
+      const param = new FormData()
+      param.append('file', file)
+      param.append('function', 'uploadBackgroundFoot')
+      param.append('project_id', this.project.tBody[this.chooseIndex]._id.$id)
+
+      uploadBackgroundFoot(param).then(res => {
+        console.log(res)
+        if (res.data.status === 'success') {
+          this.$message({
+            message: '上传成功',
+            type: 'success'
+          })
+          this.dialogVisible2 = false
+          this.getGameList()
+        }
+      })
+    },
     setChoose (val, index) {
       this.chooseAwards = []
+      this.radio = '1'
+      this.radio1 = '1'
+      this.radio2 = '1'
       this.itemDetail = val
       this.chooseIndex = index
       this.awards = this.project.tBody[index].awards
+      if(this.project.tBody[index].choose_template !== undefined){
+        this.radio = this.project.tBody[index].choose_template.individualType
+        this.radio1 = this.project.tBody[index].choose_template.teamType
+        this.radio2 = this.project.tBody[index].choose_template.awardForward
+        this.chooseAwards = this.project.tBody[index].choose_template.chooseAwards
+      }
       this.dialogVisible1 = true
       console.log(this.awards)
     },
@@ -204,11 +268,17 @@ export default {
     },
     uploadChoose () {
       const { itemDetail, radio, radio1, radio2, chooseAwards } = this
-      const options = {
+      console.log(this.chooseAwards)
+      if(this.chooseAwards.length===0){
+        this.$message({
+          message:'请选择导出的奖项！'
+        })
+      }else{
+        const options = {
         project_id: itemDetail._id.$id,
-        individualType: radio,
-        teamType: radio1,
-        awardForward: radio2,
+        individualType: radio,//1是单页 2是表格
+        teamType: radio1,//1是单页 2是表格
+        awardForward: radio2,//1是个人奖在前 2是团队奖在前
         chooseAwards: chooseAwards
       }
       uploadChoose(options)
@@ -222,6 +292,8 @@ export default {
         .catch(() => {
           this.$message.error('修改设置失败,请稍后再试')
         })
+      }
+      
     }
   }
 }

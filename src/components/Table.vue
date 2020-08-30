@@ -21,6 +21,8 @@
         </template>
       </el-table-column>
       <slot name="background"></slot>
+      <slot name="backgroundFoot"></slot>
+      <slot name="isSetChoose"></slot>
       <slot name="operation"></slot>
     </el-table>
     <div class="pagination-wrapper">
