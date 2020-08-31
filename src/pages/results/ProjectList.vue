@@ -40,9 +40,9 @@
             <el-button type="text" @click="upload(scope.$index)">
               上传背景图
             </el-button>
-            <el-button type="text" @click="setChoose(scope.$index)">
+            <!-- <el-button type="text" @click="setChoose(scope.$index)">
               选项设置
-            </el-button>
+            </el-button> -->
           </template>
         </el-table-column>
       </template>
