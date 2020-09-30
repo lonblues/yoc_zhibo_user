@@ -35,13 +35,21 @@ export function uploadBackground (formData) {
     console.log(error)
   })
 }
+export function uploadBackgroundFoot (formData) {
+  return request.post('./index.php', formData).then(function (response) {
+    return response
+  }).catch(function (error) {
+    console.log(error)
+  })
+}
 
-export function uploadChoose ({ project_id, type, status, chooseAwards }) {
+export function uploadChoose ({ project_id, individualType, teamType, awardForward, chooseAwards }) {
   return request.post('./index.php', {
     function: 'uploadChoose',
     project_id,
-    type,
-    status,
+    individualType,
+    teamType,
+    awardForward,
     chooseAwards
   }).then(function (response) {
     return response

@@ -49,7 +49,7 @@
     </table-list>
 
     <el-dialog title="上传背景图" :visible.sync="dialogVisible" >
-      
+
       <div v-if="!project.tBody[chooseIndex].project_award_background">未上传</div>
       <input style="margin-top:20px" name="file" type="file"  accept="*" :ref="'file'+chooseIndex"/>
 
@@ -83,17 +83,14 @@
       </div>
       <div style="margin-top:20px">
         奖项顺序
-        
+
         <div v-for="(item,index) in chooseAwards" :key="index" style="display:flex;align-items:center;margin-top:20px">
           <div>{{item}}</div>
           <el-button size="mini" style="margin-left:20px" type="text" @click="moveUp(index)">上移</el-button>
           <el-button size="mini" type="text" @click="moveDown(index)">下移</el-button>
         </div>
-        
+
       </div>
-
-
-
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible1 = false">取 消</el-button>
@@ -106,7 +103,7 @@
 
 <script>
 import tableList from '@/components/Table'
-import { getProjectsByYear, uploadBackground,uploadChoose } from '@/api/yaodian.js'
+import { getProjectsByYear, uploadBackground, uploadChoose } from '@/api/yaodian.js'
 export default {
   name: 'project',
   components: {
@@ -115,10 +112,10 @@ export default {
   data () {
     return {
       dialogVisible: false,
-      dialogVisible1:false,
-      radio:'1',
-      radio1:'1',
-      radio2:'1',
+      dialogVisible1: false,
+      radio: '1',
+      radio1: '1',
+      radio2: '1',
       project: {
         tHead: [
           { id: 'bank_account_company', label: '公司' },
@@ -152,8 +149,8 @@ export default {
       time: '19-20',
       form: {},
       chooseIndex: 0,
-      awards:[],
-      chooseAwards:[]
+      awards: [],
+      chooseAwards: []
     }
   },
   created () {
@@ -198,10 +195,10 @@ export default {
         }
       })
     },
-    setChoose(index){
-      this.chooseIndex =index
+    setChoose (index) {
+      this.chooseIndex = index
       this.awards = this.project.tBody[index].awards
-      this.dialogVisible1=true
+      this.dialogVisible1 = true
       console.log(this.awards)
     },
     moveDown (index) {
@@ -218,8 +215,8 @@ export default {
         this.chooseAwards = awardList
       }
     },
-    uploadChoose(){
-      
+    uploadChoose () {
+
     }
   }
 }
