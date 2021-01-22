@@ -9,16 +9,15 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@johmun/vue-tags-input": "^2.1.0",
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "element-ui": "^2.13.0",
-    "html2canvas": "^1.0.0-rc.7",
     "js-cookie": "^2.2.1",
-    "jspdf": "^2.0.0",
     "normalize.css": "^8.0.1",
+    "pili-rtc-web": "^2.4.0",
     "sass-loader": "^8.0.2",
     "vue": "^2.6.11",
+    "vue-audio-better": "^3.0.1",
     "vue-router": "^3.1.5",
     "vuex": "^3.5.1",
     "vuex-persistedstate": "^3.1.0"

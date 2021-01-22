@@ -1,16 +1,26 @@
 <template>
-  <div id="app">
-    <router-view />
+  <div id="app" style="height:100%">
+
+      <router-view />
+
   </div>
 </template>
 <script>
 export default {
-  components: {},
-  data () {
-    return {}
+  components: {
+
   },
-  methods: {}
+  data () {
+    return {
+
+    }
+  },
+  methods: {
+
+  }
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+
+</style>

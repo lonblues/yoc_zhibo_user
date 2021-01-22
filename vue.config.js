@@ -3,7 +3,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/index.php': {
-        target: 'http://101.132.180.199/host/AwardReport/',
+        target: 'http://web-backend-test.reachable-edu.com/Zhibo/',
         secure: false
       }
     },
