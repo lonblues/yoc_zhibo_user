@@ -29,12 +29,12 @@
                     </template>
                 </el-table-column>
             </el-table> -->
-            <el-dialog :visible.sync="showInfo" title="输入信息">
+            <el-dialog :visible.sync="showInfo" title="Info">
                 
-                <p>用户名</p><el-input v-model="userId"></el-input>
+                <p>Please enter your name</p><el-input v-model="userId"></el-input>
               
                 <div>
-                  <el-button type="primary" style="margin-top:20px" @click="joinRoom">加入</el-button>
+                  <el-button type="primary" style="margin-top:20px" @click="joinRoom">Join Room</el-button>
                 </div>
             </el-dialog>
             <!-- <el-dialog :visible.sync="showToken">
@@ -54,11 +54,11 @@
 
         <!-- <label>请输入 RoomToken 加入房间开始连麦</label>
         <el-input v-model="roomToken" type="text"></el-input> -->
-        <el-button type="primary" @click="showInfo=true">加入房间</el-button>
+        <el-button type="primary" @click="showInfo=true">Join Room</el-button>
         <el-dropdown trigger="click" @visible-change="listRoomUsers" style="margin-left:10px" placement="bottom-start">
           <el-badge :value="newMessages.length" class="item" :hidden="newMessages.length==0">
             <el-button type="primary">
-              聊天<i class="el-icon-arrow-down el-icon--right"></i>
+              Chat<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
           </el-badge>
           <el-dropdown-menu slot="dropdown">
@@ -69,6 +69,7 @@
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
+        <el-button @click="showSend=true" type="primary" v-if="userId=='admin'" style="margin-left:20px">Post</el-button>
 
         <el-dialog :visible.sync="showChat" @close="removeMessage">
           <div class="chatBlock">
@@ -78,21 +79,25 @@
               </div>
             </div>
           </div>
-          <div>
-            <el-input v-model="message" style="width:80%"></el-input>
-            <el-button type="primary" @click="sendMessage" style="margin-left:10px">发送</el-button>
+          <div style="margin-top:20px">
+            <el-input v-model="message" style="width:86%"></el-input>
+            <el-button type="primary" @click="sendMessage" style="margin-left:10px">Send</el-button>
           </div>
         </el-dialog>
 
         <div class="users">
-            <p>本地视频</p>
-            <div id="localvideo" style="width:500px"></div>
-            <p>会议内容</p>
+            <p style="color:#606266">Local</p>
+            <div id="localvideo" style="width:320px"></div>
+            <p style="margin-top:30px;color:#606266" v-if="userId=='admin'">Meeting</p>
             <div id="remote">
-              <div id="mobile" style="width:50%"></div>
-              <div id="ppt" style="width:50%"></div>
+              <!-- <div id="mobile" style="width:50%"></div>
+              <div id="ppt" style="width:50%"></div> -->
             </div>
         </div>
+        <el-dialog :visible.sync="showSend" title="Send">
+          <el-input v-model="messageAll"></el-input>
+          <el-button @click="sendAll">Send</el-button>
+        </el-dialog>
 
     </div>
 </template>
@@ -116,6 +121,7 @@ export default {
       lastUser: '',
       showInfo: false,
       showToken: false,
+      showSend:false,
       room: '',
       userId: '',
       userToken: '',
@@ -127,7 +133,8 @@ export default {
       showChat:false,
       chatMessage:[],
       allMessages:{},
-      newMessages:[]
+      newMessages:[],
+      messageAll:''
     }
   },
   mounted () {
@@ -165,19 +172,36 @@ export default {
         const users = await myRoom.joinRoomWithToken(roomToken)
 
         // 如果加入房间后发现房间已经有人发布，就订阅他
-        for (const user of users) {
-          if (user.userId !== myRoom.userId && user.published) {
-            if(user.userId=='mobile'){
-              this.subscribeUser(user.userId,'mobile')
-            }else if(user.userId=='ppt'){
-              this.subscribeUser(user.userId,'ppt')
-            }else{
+        if(this.userId=='admin'){
+          for (const user of users) {
+            if (user.userId !== myRoom.userId && user.published) {
+              // if(user.userId=='mobile'){
+              //   this.subscribeUser(user.userId,'mobile')
+              // }else if(user.userId=='ppt'){
+              //   this.subscribeUser(user.userId,'ppt')
+              // }else{
+              //   let div = document.createElement('div');
+              //   div.setAttribute('id',user.userId);
+              //   div.style.width = '320px';
+              
+              //   let remote = document.getElementById('remote')
+              //   remote.appendChild(div)
+              //   this.subscribeUser(user.userId,user.userId)
+              // }
               let div = document.createElement('div');
-              div.setAttribute('id',user.userId);
-              div.style.width = '300px';
-              div.style.height = '200px';
+              let div1 = document.createElement('div');
+              let div2 = document.createElement('div');
+              div.appendChild(div1)
+              div.appendChild(div2)
+              div2.style.height='50px';
+              div2.style.color='#606266'
+              div2.style.textAlign='center'
+              div2.innerHTML=user.userId
+              div1.setAttribute('id',user.userId);
+              div1.style.width = '320px';
               let remote = document.getElementById('remote')
               remote.appendChild(div)
+              
 
               this.subscribeUser(user.userId,user.userId)
             }
@@ -185,23 +209,40 @@ export default {
         }
       } catch (e) {
         console.error(e)
-        alert(`加入房间失败！ErrorCode: ${e.code || ''}`)
+        alert(`Join Failed！ErrorCode: ${e.code || ''}`)
         return
       }
 
       // 监听房间中其他人发布的事件，自动订阅他
       myRoom.on('user-publish', (user) => {
-        if(user.userId=='mobile'){
-              this.subscribeUser(user.userId,'mobile')
-            }else if(user.userId=='ppt'){
-              this.subscribeUser(user.userId,'ppt')
-            }else{
+            // if(user.userId=='mobile'){
+            //   this.subscribeUser(user.userId,'mobile')
+            // }else if(user.userId=='ppt'){
+            //   this.subscribeUser(user.userId,'ppt')
+            // }else{
+            //   let div = document.createElement('div');
+            //   div.setAttribute('id',user.userId);
+            //   div.style.width = '320px';
+            //   let remote = document.getElementById('remote')
+            //   remote.appendChild(div)
+
+            //   this.subscribeUser(user.userId,user.userId)
+            // }
+            if(this.userId=='admin'){
               let div = document.createElement('div');
-              div.setAttribute('id',user.userId);
-              div.style.width = '640px';
-              div.style.height = '500px';
+              let div1 = document.createElement('div');
+              let div2 = document.createElement('div');
+              div.appendChild(div1)
+              div.appendChild(div2)
+              div2.style.height='50px';
+              div2.innerHTML=user.userId
+               div2.style.textAlign='center'
+              div2.style.color='#606266'
+              div1.setAttribute('id',user.userId);
+              div1.style.width = '320px';
               let remote = document.getElementById('remote')
               remote.appendChild(div)
+              
 
               this.subscribeUser(user.userId,user.userId)
             }
@@ -209,8 +250,7 @@ export default {
       })
 
       myRoom.on("messages-received", data=> {
-        console.log('我收到了消息')
-        console.log(data)
+        
        
         if(this.allMessages[data[0].userId]!==undefined){
           let box = this.allMessages[data[0].userId]
@@ -235,7 +275,7 @@ export default {
 
       myRoom.on("user-join",(user)=>{
         this.$message({
-          message:user.userId+'加入了房间~',
+          message:user.userId+'comming~',
           type:'success'
         })
       });
@@ -267,7 +307,7 @@ export default {
         })
       } catch (e) {
         console.error(e)
-        alert(`采集失败，请检查您的设备。ErrorCode: ${e.code}`)
+        alert(`Please check your device。ErrorCode: ${e.code}`)
         return
       }
 
@@ -280,7 +320,7 @@ export default {
         await myRoom.publish(stream)
       } catch (e) {
         console.error(e)
-        alert(`发布失败，ErrorCode: ${e.code}`)
+        alert(`Fail，ErrorCode: ${e.code}`)
       }
     },
     async publish () {
@@ -293,17 +333,17 @@ export default {
             enabled: true,
             deviceId: this.videoDevice,
             bitrate: 1000,
-            height:1080,
-            width:1920
+            height:480,
+            width:640
           },
           audio: {
-            enabled: true,
+            enabled: false,
             deviceId: this.audioDevice
           }
         })
       } catch (e) {
         console.error(e)
-        alert(`采集失败，请检查您的设备。ErrorCode: ${e.code}`)
+        alert(`Please check your device。ErrorCode: ${e.code}`)
         return
       }
 
@@ -316,7 +356,7 @@ export default {
         await myRoom.publish(stream)
       } catch (e) {
         console.error(e)
-        alert(`发布失败，ErrorCode: ${e.code}`)
+        alert(`Fail，ErrorCode: ${e.code}`)
       }
     },
     subscribeUser (userId,position) {
@@ -344,7 +384,17 @@ export default {
       if(e){
         if(this.room!==''){
           listRoomUsers('test').then(res => {
-            this.userList = res.data.users
+            if(this.userId!=='admin'){
+              let list = res.data.users.filter(item=>{
+                return item.userId=='admin'
+              })
+              this.userList = list
+            }else{
+              let list = res.data.users.filter(item=>{
+                return item.userId!=='admin'
+              })
+              this.userList = list
+            }
           })
         }
       }
@@ -419,6 +469,10 @@ export default {
       }else{
         return false
       }
+    },
+    sendAll(){
+      myRoom.sendCustomMessage(this.messageAll);
+      this.showSend=false
     }
   }
 }
